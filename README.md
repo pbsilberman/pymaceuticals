@@ -1,7 +1,7 @@
 
 # Pymaceuticals Observed Trends
-* Trend 1
-* Trend 2
+* Capomulin was legitimately successful at treating the tumors in this population of mice. It was the only treatment of those analyzed to actually reduce the total tumor volume over the course of treatment. Additionally, survival rate was significantly higher compared to the other treatments. It should be noted that metastatic sites still increased over time, but at a rate slower than the other treatments.
+* Some of the other treatments were arguably less effective than no treatment (Placebo). Ketapril, in particular, was less effective at treating tumor volume than the placebo medication. The growth of metastatic sites for placebo treated mice and ketapril treated mice were indistinguishable given how their errors overlapped. This leads one to believe that Ketapril is not an effective method of treatment.
 * Trend 3
 
 
@@ -732,32 +732,60 @@ print(vol_change)
 
 
 ```python
+# Referencing http://composition.al/blog/2015/11/29/a-better-way-to-add-labels-to-bar-charts-with-matplotlib/
+# This funciton labels each bar (rectangle object) with its height value
+def autolabel(rects, ax):
+    # Get y-axis height to calculate label position from.
+    (y_bottom, y_top) = ax.get_ylim()
+    y_height = y_top - y_bottom
+
+    for rect in rects:
+        height = rect.get_height()
+        
+        # Just print the percentage in the center of the bar
+        label_position = height/2
+
+        ax.text(rect.get_x() + rect.get_width()/2., label_position,str('%d' % int(height)) + '%',
+                ha='center', va='bottom', color = 'w', size = 14)
+```
+
+
+```python
 # Plot the bar chart for percent change
+fig, ax = plt.subplots()
+
 x_axis = np.arange(0,4,1)
 heights = [vol_change["Capomulin"], vol_change["Ketapril"], vol_change["Placebo"], vol_change["Infubinol"]]
 labels = ["Capomulin", "Ketapril", "Placebo", "Infubinol"]
 colors = []
+
+# If the change in volume is positive, assign the color red, else green
 for vols in heights:
     if vols >= 0:
         colors.append('r')
     else:
         colors.append('g')
 
-plt.bar(x_axis, heights, width = 1, align='center', color = colors, edgecolor = 'black', linewidth = 1.0, tick_label = labels)
+barplot = ax.bar(x_axis, heights, width = 1, align='center', color = colors,
+                 edgecolor = 'black', linewidth = 1, tick_label = labels)
 
 # Add labeling
-plt.title("Tumor Change over 45 Day Treatment")
-plt.ylabel("% Tumor Volume Change")
+ax.set_title("Tumor Change over 45 Day Treatment")
+ax.set_ylabel("% Tumor Volume Change")
 
 # Add Gridlines
-plt.grid(alpha = 0.25)
+ax.grid(alpha = 0.25)
 
 # Adjust axis
-plt.xlim(-.5,3.5)
+ax.set_xlim(-.5,3.5)
+ax.set_ylim(min(heights), max(heights)+5)
+
+# Add labels for the percentages
+autolabel(barplot, ax)
 
 plt.show()
 ```
 
 
-![png](output_18_0.png)
+![png](output_19_0.png)
 
